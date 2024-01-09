@@ -1,2 +1,2 @@
 # fishbook
-Android app for wholesale and retailer sailer
+Android app for wholesale and retaile sailer
