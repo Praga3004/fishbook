@@ -1,8 +1,17 @@
+import 'package:fishbook/login.dart';
+import 'package:fishbook/start.dart';
 import 'package:fishbook/startup.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -53,6 +62,16 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class FireStoreService {
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FireStoreService _instance = FireStoreService._internal();
+  factory FireStoreService() => _instance;
+  FireStoreService._internal();
+   Future<void> addData(String collection, Map<String, dynamic> data) async {
+    await _firestore.collection(collection).add(data);
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {

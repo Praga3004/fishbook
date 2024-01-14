@@ -1,4 +1,7 @@
+import 'package:fishbook/main.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -8,6 +11,8 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  FireStoreService fs = new FireStoreService();
+
   double calculateFontSize(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -20,6 +25,21 @@ class _SignUpState extends State<SignUp> {
   TextEditingController pCon = TextEditingController();
   TextEditingController paCon = TextEditingController();
   TextEditingController cpCon = TextEditingController();
+  Future<void> addDataToFirestore() async {
+    print("Vanthutom");
+    try {
+      fs.addData('user', {
+        'user': uCon.text,
+        'email': eCon.text,
+        'phone': (pCon.text),
+        'password': paCon.text,
+        'conformpassword': cpCon.text
+      });
+      print('Data added successfully');
+    } catch (e) {
+      print('Error adding data: $e');
+    }
+  }
 
   bool isEmailValid(String email) {
     // Regular expression for a valid email address
@@ -338,18 +358,7 @@ class _SignUpState extends State<SignUp> {
                         }
                         print(passwordWarning);
                         // All validations passed, print or use the values as needed
-                        print(user +
-                            '\n' +
-                            username +
-                            '\n' +
-                            email +
-                            '\n' +
-                            phone +
-                            '\n' +
-                            password +
-                            '\n' +
-                            confirmPassword +
-                            '\n');
+                        addDataToFirestore();
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
