@@ -1,4 +1,4 @@
-import 'package:fishbook/home.dart';
+import 'package:fishbook/startup.dart';
 import 'package:flutter/material.dart';
 
 void main() {
