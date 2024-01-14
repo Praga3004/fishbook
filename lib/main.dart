@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:fishbook/login.dart';
 import 'package:fishbook/start.dart';
 import 'package:fishbook/startup.dart';
@@ -9,8 +11,8 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -69,8 +71,13 @@ class FireStoreService {
   static final FireStoreService _instance = FireStoreService._internal();
   factory FireStoreService() => _instance;
   FireStoreService._internal();
-   Future<void> addData(String collection, Map<String, dynamic> data) async {
-    await _firestore.collection(collection).add(data);
+  Future<void> addData(String collection, Map<String, dynamic> data,
+      {String? documentId}) async {
+    CollectionReference col = _firestore.collection(collection);
+    DocumentReference documentReference =
+        documentId != null ? col.doc(documentId) : await col.add(data);
+    documentReference.set(data);
+    //await _firestore.collection(collection).add(data);
   }
 }
 

@@ -28,13 +28,16 @@ class _SignUpState extends State<SignUp> {
   Future<void> addDataToFirestore() async {
     print("Vanthutom");
     try {
-      fs.addData('user', {
-        'user': uCon.text,
-        'email': eCon.text,
-        'phone': (pCon.text),
-        'password': paCon.text,
-        'conformpassword': cpCon.text
-      });
+      String email = eCon.text;
+      fs.addData(
+          'user',
+          {
+            'user': uCon.text,
+            'email': eCon.text,
+            'phone': (pCon.text),
+            'password': paCon.text,
+            'conformpassword': cpCon.text
+          },documentId: email);
       print('Data added successfully');
     } catch (e) {
       print('Error adding data: $e');
