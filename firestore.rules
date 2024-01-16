@@ -1,10 +1,22 @@
-rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read and write access only to authenticated users
+    // Allow read access to all documents
     match /{document=**} {
+      allow read: if true;
+    }
+
+    // Define rules for the "users" collection
+    match /user/{userId} {
       allow read, write;
+
+      // Constraints for usertype, username, email, and phonenum
+      allow write: if request.resource.data.keys().hasAll(['usertype', 'username', 'email', 'phonenum']) &&
+                    request.resource.data.usertype is bool &&
+                    request.resource.data.username is string &&
+                    request.resource.data.email is string &&
+                    request.resource.data.phonenum is int &&
+                    request.resource.data.phonenum >= 0 &&
+                    request.resource.data.phonenum <= 9999999999;
     }
   }
 }

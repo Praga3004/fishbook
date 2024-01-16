@@ -2,6 +2,7 @@ import 'package:fishbook/main.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -26,23 +27,51 @@ class _SignUpState extends State<SignUp> {
   TextEditingController paCon = TextEditingController();
   TextEditingController cpCon = TextEditingController();
   Future<void> addDataToFirestore() async {
-    print("Vanthutom");
     try {
       String email = eCon.text;
       fs.addData(
           'user',
           {
+            'user_type': user_type,
             'user': uCon.text,
             'email': eCon.text,
             'phone': (pCon.text),
-            'password': paCon.text,
-            'conformpassword': cpCon.text
-          },documentId: email);
+          },
+          documentId: email);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: paCon.text,
+      );
+      uCon.text = '';
+      eCon.text = '';
+      pCon.text = '';
+      paCon.text = '';
+      cpCon.text = '';
+
       print('Data added successfully');
     } catch (e) {
-      print('Error adding data: $e');
+      showWarningDialog(context, "Sign Up Error", e.toString());
     }
+  }void showWarningDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
   bool isEmailValid(String email) {
     // Regular expression for a valid email address
