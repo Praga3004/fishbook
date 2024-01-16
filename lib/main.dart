@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SignUp(),
+      home: Login(),
     );
   }
 }
@@ -64,6 +64,7 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+ 
 }
 
 class FireStoreService {
@@ -71,6 +72,25 @@ class FireStoreService {
   static final FireStoreService _instance = FireStoreService._internal();
   factory FireStoreService() => _instance;
   FireStoreService._internal();
+   void showWarningDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
   Future<void> addData(String collection, Map<String, dynamic> data,
       {String? documentId}) async {
     CollectionReference col = _firestore.collection(collection);

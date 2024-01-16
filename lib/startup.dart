@@ -1,3 +1,4 @@
+import 'package:fishbook/login.dart';
 import 'package:fishbook/main.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,7 @@ class _SignUpState extends State<SignUp> {
     return screenWidth / 30;
   }
 
+  bool _isPasswordVisible = true;
   bool user_type = true;
   TextEditingController uCon = TextEditingController();
   TextEditingController eCon = TextEditingController();
@@ -38,10 +40,15 @@ class _SignUpState extends State<SignUp> {
             'phone': (pCon.text),
           },
           documentId: email);
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
         email: email,
         password: paCon.text,
-      );
+      )
+          .then((userCrediential) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Login()));
+      });
       uCon.text = '';
       eCon.text = '';
       pCon.text = '';
@@ -50,28 +57,9 @@ class _SignUpState extends State<SignUp> {
 
       print('Data added successfully');
     } catch (e) {
-      showWarningDialog(context, "Sign Up Error", e.toString());
+      fs.showWarningDialog(context, "Sign Up Error", e.toString());
     }
-  }void showWarningDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
   }
-
 
   bool isEmailValid(String email) {
     // Regular expression for a valid email address
@@ -287,16 +275,22 @@ class _SignUpState extends State<SignUp> {
                       TextField(
                         controller: paCon,
                         keyboardType: TextInputType.visiblePassword,
-                        obscureText: true,
+                        obscureText: _isPasswordVisible,
                         decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          prefixIcon: Icon(Icons.lock),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
+                            labelText: 'Password',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            prefixIcon: Icon(Icons.lock),
+                            filled: true,
+                            fillColor: Colors.white,
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible;
+                                  });
+                                },
+                                icon: Icon(_isPasswordVisible?Icons.visibility:Icons.visibility_off))),
                       ),
                       SizedBox(height: 5),
                       Text(passwordWarning,
