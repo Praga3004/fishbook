@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "946256318755",
+    "firebase_url": "https://fishbook-e6ae1-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "fishbook-e6ae1",
+    "storage_bucket": "fishbook-e6ae1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946256318755:android:9f72da70e268ef813b7c96",
+        "android_client_info": {
+          "package_name": "com.example.fishbook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDenrSqATW6Mv3SW9FvaQTd4SagFjRAXtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946256318755:android:6884df4edf18c7323b7c96",
+        "android_client_info": {
+          "package_name": "com.fishbook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDenrSqATW6Mv3SW9FvaQTd4SagFjRAXtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
