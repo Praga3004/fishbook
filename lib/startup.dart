@@ -31,24 +31,40 @@ class _SignUpState extends State<SignUp> {
   Future<void> addDataToFirestore() async {
     try {
       String email = eCon.text;
-      fs.addData(
-          'user',
-          {
-            'user_type': user_type,
-            'user': uCon.text,
-            'email': eCon.text,
-            'phone': (pCon.text),
-          },
-          documentId: email);
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      String password = paCon.text;
+      String displayName = uCon.text;
+      String phoneNumber = pCon.text;
+      num convertedNumber = num.parse(phoneNumber);
+
+      if (email.isEmpty ||
+          password.isEmpty ||
+          displayName.isEmpty ||
+          phoneNumber.isEmpty) {
+        print("Empty");
+        return;
+      }
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
-        password: paCon.text,
-      )
-          .then((userCrediential) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Login()));
-      });
+        password: password,
+      );
+
+      User? user = userCredential.user;
+      if (user != null) {
+        await user.updateDisplayName(displayName);
+
+        FirebaseFirestore _firestore = FirebaseFirestore.instance;
+        await _firestore.collection('user').doc(user.email).set({
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'displayName': displayName,
+          'userType': user_type ? "Owner" : "Crew member",
+        });
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyHomePage()));
+      }
+
       uCon.text = '';
       eCon.text = '';
       pCon.text = '';
@@ -83,6 +99,7 @@ class _SignUpState extends State<SignUp> {
     return regex.hasMatch(password);
   }
 
+  String userwarning = '';
   String emailWarning = '';
   String phoneWarning = '';
   String passwordWarning = '';
@@ -124,88 +141,94 @@ class _SignUpState extends State<SignUp> {
                   Container(
                       child: Row(
                     children: <Widget>[
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  user_type = true;
-                                });
-                              },
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: user_type
-                                        ? Colors.white
-                                        : Colors.purple,
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Text(
-                                    'Owner',
-                                    style: TextStyle(
-                                        color: user_type
-                                            ? Colors.white
-                                            : Colors.purple),
-                                  ),
-                                ],
+                      Container(
+                        child: Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    user_type = true;
+                                  });
+                                },
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: user_type
+                                          ? Colors.white
+                                          : Colors.purple,
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      'Owner',
+                                      style: TextStyle(
+                                          color: user_type
+                                              ? Colors.white
+                                              : Colors.purple),
+                                    ),
+                                  ],
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    padding: EdgeInsets.all(30.0),
+                                    minimumSize: Size(150.0, 150.0),
+                                    backgroundColor: user_type
+                                        ? Colors.purple
+                                        : Colors.white),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  padding: EdgeInsets.all(30.0),
-                                  minimumSize: Size(100, 100),
-                                  backgroundColor:
-                                      user_type ? Colors.purple : Colors.white),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  user_type = false;
-                                });
-                              },
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.person,
-                                    color: user_type
-                                        ? Colors.purple
-                                        : Colors.white,
-                                    size: 50,
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Text(
-                                    'Crew Member',
-                                    style: TextStyle(
-                                        color: user_type
-                                            ? Colors.purple
-                                            : Colors.white),
-                                  ),
-                                ],
+                      Container(
+                        child: Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    user_type = false;
+                                  });
+                                },
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.person,
+                                      color: user_type
+                                          ? Colors.purple
+                                          : Colors.white,
+                                      size: 50,
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      'Crew Member',
+                                      style: TextStyle(
+                                          color: user_type
+                                              ? Colors.purple
+                                              : Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    padding: EdgeInsets.all(30.0),
+                                    minimumSize: Size(150, 150),
+                                    backgroundColor: user_type
+                                        ? Colors.white
+                                        : Colors.purple),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  padding: EdgeInsets.all(30.0),
-                                  minimumSize: Size(100, 100),
-                                  backgroundColor:
-                                      user_type ? Colors.white : Colors.purple),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -213,111 +236,133 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 10.0),
                   Column(
                     children: [
-                      TextField(
-                        controller: uCon,
-                        decoration: InputDecoration(
-                          labelText: 'Username',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                      Container(
+                        height: 50,
+                        child: TextField(
+                          controller: uCon,
+                          decoration: InputDecoration(
+                            labelText: 'Username',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            prefixIcon: Icon(Icons.person),
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
-                          prefixIcon: Icon(Icons.person),
-                          filled: true,
-                          fillColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(userwarning,
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10.0),
+                  Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        child: TextField(
+                          controller: eCon,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            prefixIcon: Icon(Icons.email),
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(''),
+                      Text(emailWarning,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold)),
                     ],
                   ),
                   SizedBox(height: 10.0),
                   Column(
                     children: [
-                      TextField(
-                        controller: eCon,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                      Container(
+                        height: 50,
+                        child: TextField(
+                          controller: pCon,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            labelText: 'Phone No.',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            prefixIcon: Icon(Icons.phone_in_talk),
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
-                          prefixIcon: Icon(Icons.email),
-                          filled: true,
-                          fillColor: Colors.white,
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(emailWarning, style: TextStyle(color: Colors.red)),
+                      Text(phoneWarning,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold)),
                     ],
                   ),
                   SizedBox(height: 10.0),
                   Column(
                     children: [
-                      TextField(
-                        controller: pCon,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: 'Phone No.',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          prefixIcon: Icon(Icons.phone_in_talk),
-                          filled: true,
-                          fillColor: Colors.white,
+                      Container(
+                        child: TextField(
+                          controller: paCon,
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: _isPasswordVisible,
+                          decoration: InputDecoration(
+                              labelText: 'Password',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              prefixIcon: Icon(Icons.lock),
+                              filled: true,
+                              fillColor: Colors.white,
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPasswordVisible = !_isPasswordVisible;
+                                    });
+                                  },
+                                  icon: Icon(_isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off))),
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(phoneWarning, style: TextStyle(color: Colors.red)),
+                      Text(passwordWarning,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold)),
                     ],
                   ),
                   SizedBox(height: 10.0),
                   Column(
                     children: [
-                      TextField(
-                        controller: paCon,
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: _isPasswordVisible,
-                        decoration: InputDecoration(
-                            labelText: 'Password',
+                      Container(
+                        child: TextField(
+                          controller: cpCon,
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: _isPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             prefixIcon: Icon(Icons.lock),
                             filled: true,
                             fillColor: Colors.white,
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible;
-                                  });
-                                },
-                                icon: Icon(_isPasswordVisible?Icons.visibility:Icons.visibility_off))),
-                      ),
-                      SizedBox(height: 5),
-                      Text(passwordWarning,
-                          style: TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                  SizedBox(height: 10.0),
-                  Column(
-                    children: [
-                      TextField(
-                        controller: cpCon,
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          prefixIcon: Icon(Icons.lock),
-                          filled: true,
-                          fillColor: Colors.white,
                         ),
                       ),
                       SizedBox(height: 5),
                       Text(
                         confirmPasswordWarning,
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -333,11 +378,23 @@ class _SignUpState extends State<SignUp> {
                         String password = paCon.text;
                         String confirmPassword = cpCon.text;
                         String user = user_type ? "Owner" : "Crew Member";
+                        if (username == '') {
+                          setState(() {
+                            userwarning = 'State your name';
+                          });
 
+                          return;
+                        } else {
+                          setState(() {
+                            userwarning = '';
+                          });
+                        }
                         // Validate email
                         if (!isEmailValid(email)) {
                           setState(() {
-                            emailWarning = 'Invalid email address';
+                            emailWarning = email == ''
+                                ? 'Email Required'
+                                : 'Invalid email address';
                           });
                           return;
                         } else {
@@ -349,7 +406,9 @@ class _SignUpState extends State<SignUp> {
                         // Validate phone number
                         if (!isPhoneNumberValid(phone)) {
                           setState(() {
-                            phoneWarning = 'Invalid phone number';
+                            phoneWarning = phone == ''
+                                ? 'Phone Number Required'
+                                : 'Invalid phone number';
                           });
                           return;
                         } else {
@@ -361,7 +420,9 @@ class _SignUpState extends State<SignUp> {
                         // Validate password
                         if (!isPasswordValid(password)) {
                           setState(() {
-                            passwordWarning = 'Invalid password';
+                            passwordWarning = password == ''
+                                ? 'Password Required'
+                                : 'Invalid password';
                           });
                           return;
                         } else {
@@ -373,8 +434,9 @@ class _SignUpState extends State<SignUp> {
                         // Check if password and confirm password match
                         if (password != confirmPassword) {
                           setState(() {
-                            confirmPasswordWarning =
-                                'Password and Confirm Password do not match';
+                            confirmPasswordWarning = confirmPassword == ''
+                                ? 'Confirm your password'
+                                : 'Password and Confirm Password do not match';
                           });
                           return;
                         } else {
@@ -399,10 +461,32 @@ class _SignUpState extends State<SignUp> {
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0)),
-                          padding: EdgeInsets.all(30.0),
-                          minimumSize: Size(50, 50)),
+                          minimumSize: Size(150.0, 50.0)),
                     ),
-                  )
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Login()));
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(width: 8.0),
+                          Text(
+                            'Sign In?',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                          minimumSize: Size(150.0, 50.0)),
+                    ),
+                  ),
                 ],
               ),
             ),
