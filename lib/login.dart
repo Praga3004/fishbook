@@ -3,6 +3,7 @@ import 'package:fishbook/startup.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -36,21 +37,24 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<void> signIn(String email, String password) async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      )
-          .then((userCrediential) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MyHomePage()));
-      });
-    } catch (e) {
-      fs.showWarningDialog(context, "Sign In Error", e.toString());
-    }
+   Future<void> signIn(String email, String password) async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // After successful login, set the token in SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', 'someNonNullableValue');
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MyHomePage()));
+  } catch (e) {
+    fs.showWarningDialog(context, "Sign In Error", e.toString());
   }
+}
+
 
   void resetPassword(String enteredEmail) async {
     try {

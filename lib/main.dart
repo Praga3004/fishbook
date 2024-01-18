@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'BottonNavigationBarMixin.dart';
 import 'CustomAppBarMixin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,8 +35,55 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignUp(),
+      home: AuthenticationWrapper(),
     );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      // Check if the user is authenticated
+      future: checkUserAuthentication(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Loading indicator or splash screen while checking authentication
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else {
+          // If authenticated, show the home page; otherwise, show the login page
+          if (snapshot.data == false) {
+            // Not authenticated, navigate to Login page
+            return Navigator(
+              onGenerateRoute: (routeSettings) {
+                return MaterialPageRoute(builder: (context) => Login());
+              },
+            );
+          } else {
+            // Authenticated, navigate to MyHomePage
+            return Navigator(
+              onGenerateRoute: (routeSettings) {
+                return MaterialPageRoute(builder: (context) => MyHomePage());
+              },
+            );
+          }
+        }
+      },
+    );
+  }
+
+
+  Future<bool> checkUserAuthentication() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    bool isloggined = true;
+    if (user == null) {
+      isloggined = false;
+      return isloggined;
+    }
+    return isloggined;
+
+   
   }
 }
 
@@ -77,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCustomAppbar(context),
+      appBar: buildCustomAppBar(context),
       drawer: LeftDashboard(),
       body: Center(
         child: _user != null
@@ -103,37 +151,6 @@ class _MyHomePageState extends State<MyHomePage>
       }),
     );
   }
-
-  AppBar buildCustomAppbar(BuildContext context) {
-    return AppBar(
-      leading: Builder(
-        builder: (BuildContext context) {
-          return IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: Icon(
-              Icons.dashboard,
-              size: 30,
-              color: Colors.lightBlue,
-            ),
-          );
-        },
-      ),
-      actions: <Widget>[
-        IconButton(
-          onPressed: () {
-            print("Right Button");
-          },
-          icon: Icon(
-            Icons.person,
-            size: 30.0,
-            color: Colors.lightBlue,
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class LeftDashboard extends StatelessWidget {
@@ -153,12 +170,8 @@ class LeftDashboard extends StatelessWidget {
           await _firestore.collection('user').doc(user.email).get();
 
       if (userSnapshot.exists) {
-      
-          _user = user;
-          _userData = userSnapshot.data() as Map<String, dynamic>;
-        
-
-       
+        _user = user;
+        _userData = userSnapshot.data() as Map<String, dynamic>;
       }
     }
     print(_userData?['userType']);

@@ -18,7 +18,7 @@ class _SignUpState extends State<SignUp> {
   double calculateFontSize(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return screenWidth / 30;
+    return screenWidth / 20;
   }
 
   bool _isPasswordVisible = true;
@@ -132,7 +132,7 @@ class _SignUpState extends State<SignUp> {
                         child: Text(
                       'Sign Up',
                       style: TextStyle(
-                          color: Color.fromARGB(255, 109, 2, 141),
+                          color: Colors.lightBlue,
                           fontSize: FontSize,
                           fontWeight: FontWeight.bold),
                     )),
@@ -160,7 +160,7 @@ class _SignUpState extends State<SignUp> {
                                       size: 50,
                                       color: user_type
                                           ? Colors.white
-                                          : Colors.purple,
+                                          : Colors.lightBlue,
                                     ),
                                     SizedBox(width: 8.0),
                                     Text(
@@ -168,7 +168,7 @@ class _SignUpState extends State<SignUp> {
                                       style: TextStyle(
                                           color: user_type
                                               ? Colors.white
-                                              : Colors.purple),
+                                              : Colors.lightBlue),
                                     ),
                                   ],
                                 ),
@@ -179,7 +179,7 @@ class _SignUpState extends State<SignUp> {
                                     padding: EdgeInsets.all(30.0),
                                     minimumSize: Size(150.0, 150.0),
                                     backgroundColor: user_type
-                                        ? Colors.purple
+                                        ? Colors.lightBlue
                                         : Colors.white),
                               ),
                             ],
@@ -203,7 +203,7 @@ class _SignUpState extends State<SignUp> {
                                     Icon(
                                       Icons.person,
                                       color: user_type
-                                          ? Colors.purple
+                                          ? Colors.lightBlue
                                           : Colors.white,
                                       size: 50,
                                     ),
@@ -212,7 +212,7 @@ class _SignUpState extends State<SignUp> {
                                       'Crew Member',
                                       style: TextStyle(
                                           color: user_type
-                                              ? Colors.purple
+                                              ? Colors.lightBlue
                                               : Colors.white),
                                     ),
                                   ],
@@ -225,7 +225,7 @@ class _SignUpState extends State<SignUp> {
                                     minimumSize: Size(150, 150),
                                     backgroundColor: user_type
                                         ? Colors.white
-                                        : Colors.purple),
+                                        : Colors.lightBlue),
                               ),
                             ],
                           ),
@@ -454,7 +454,9 @@ class _SignUpState extends State<SignUp> {
                           SizedBox(width: 8.0),
                           Text(
                             'Submit',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.lightBlue),
                           ),
                         ],
                       ),
@@ -476,8 +478,10 @@ class _SignUpState extends State<SignUp> {
                         children: <Widget>[
                           SizedBox(width: 8.0),
                           Text(
-                            'Sign In?',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            'Already have a Account?',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.lightBlue),
                           ),
                         ],
                       ),
