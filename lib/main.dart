@@ -1,3 +1,4 @@
+import 'package:fishbook/crewmember.dart';
 import 'package:fishbook/login.dart';
 import 'package:fishbook/owenerdetails.dart';
 import 'package:fishbook/startup.dart';
@@ -56,7 +57,7 @@ class AuthenticationWrapper extends StatelessWidget {
             // Not authenticated, navigate to Login page
             return Navigator(
               onGenerateRoute: (routeSettings) {
-                return MaterialPageRoute(builder: (context) => Login());
+                return MaterialPageRoute(builder: (context) => const Login());
               },
             );
           } else {
@@ -207,6 +208,19 @@ class LeftDashboard extends StatelessWidget {
                   isowner(context);
                 },
                 child: Text("Owner Details",
+                    style: TextStyle(color: Colors.white)),
+              ),
+              onTap: () {},
+            ),
+            ListTile(
+              title: ElevatedButton(
+                onPressed: () {
+                     Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const crew()),
+        );
+                },
+                child: Text("Crew Member Details",
                     style: TextStyle(color: Colors.white)),
               ),
               onTap: () {},

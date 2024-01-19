@@ -22,7 +22,7 @@ service cloud.firestore {
     // Define rules for the "ownerdetail" collection
     match /user/{userId}/ownerdetail/{ownerId} {
       allow read, write;
-      allow write:if request.resource.data.keys().hasAll(['name', 'phoneNumber', 'share', 'invest']) &&
+      allow write: if request.resource.data.keys().hasAll(['name', 'phoneNumber', 'share', 'invest']) &&
                           request.resource.data.name is string &&
                           request.resource.data.phoneNumber is string &&
                           request.resource.data.share is int &&
@@ -30,5 +30,17 @@ service cloud.firestore {
                           request.resource.data.share >= 0 &&
                           request.resource.data.invest >= 0;
     }
+
+    // Define rules for the "crewdetails" collection
+match /user/{userId}/crewdetails/{crewdetailId} {
+  allow read, write;
+  allow write: if request.resource.data.keys().hasAll(['name', 'phoneNumber', 'otherSharePercentage']) &&
+                      request.resource.data.name is string &&
+                      request.resource.data.phoneNumber is string &&
+                      request.resource.data.otherSharePercentage is int &&
+                      request.resource.data.otherSharePercentage >= 0 &&
+                      request.resource.data.otherSharePercentage <= 100;
+}
+
   }
 }
