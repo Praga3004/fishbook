@@ -162,11 +162,12 @@ class LeftDashboard extends StatelessWidget {
   User? _user;
   bool user_type = false;
   Map<String, dynamic>? _userData;
+  
 
   Future<void> isowner(BuildContext context) async {
     User? user = _auth.currentUser;
-
-    if (user != null) {
+    print(user);
+      if (user != null) {
       DocumentSnapshot userSnapshot =
           await _firestore.collection('user').doc(user.email).get();
 
@@ -175,7 +176,7 @@ class LeftDashboard extends StatelessWidget {
         _userData = userSnapshot.data() as Map<String, dynamic>;
       }
     }
-    print(_userData?['userType']);
+  
     if (_userData != null) {
       user_type = _userData?['userType'] == "Crew member" ? false : true;
       print(user_type);
